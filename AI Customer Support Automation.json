@@ -1,0 +1,205 @@
+{
+  "name": "AI Customer Support Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw",
+          "mode": "list",
+          "cachedResultName": "AI Customer Support Ticket  (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2144719260,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw/edit#gid=2144719260"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -128
+      ],
+      "id": "0e7f1895-64dc-47c7-ac31-7665e30b13f5",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "IMgdLTYLCAn46kr0",
+          "name": "Google Sheets Trigger account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI customer support triage assistant.\n\nAnalyze the customer support request below.\n\nDetermine:\n1. The issue type\n2. The urgency: Low, Medium, or High\n3. A short summary\n4. A recommended action for the support team\n\n{{ $json['  Customer Name  '] }}\n{{ $json['  Email  '] }}\n{{ $json['  Issue Type  '] }}\n{{ $json['  Customer Message  '] }}\n{{ $json['  Preferred Contact Method  '] }}\n\nReturn your answer in this format:\n\nIssue Type: ...\nUrgency: ...\nSummary: ...\nRecommended Action: ...",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        64,
+        -128
+      ],
+      "id": "7825af41-8688-4440-98fd-d0a92b87e33b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openrouter/free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "5fc9a8d6-cdaa-4b85-b4a6-988a87c776ba",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "DAxjJHw7HycLGCpn",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bc808b70-90ad-460b-a6f8-8c4c41a207e6",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "Urgency: High",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        432,
+        -128
+      ],
+      "id": "7b382869-f5ec-49cd-8773-7c7adfc25390",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw",
+          "mode": "list",
+          "cachedResultName": "AI Customer Support Ticket  (Responses)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2144719260,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1A6D07lBYMYSuZN-AsohVSG8okYPJq_V0ok1-axy45Nw/edit#gid=2144719260"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -141
+      ],
+      "id": "409ae855-c909-4e01-89dd-95d187de527c",
+      "name": "Google Sheets Trigger1",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "IMgdLTYLCAn46kr0",
+          "name": "Google Sheets Trigger account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "500cd981-375a-4590-8ac2-55d3503e56ef",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "74eb7d234574083b2ee71f7a278c0e1e54490ff3f08a143a1297eeb4102c2102"
+  },
+  "nodeGroups": [],
+  "id": "JYVbfS7bdkCylGxa",
+  "tags": []
+}
